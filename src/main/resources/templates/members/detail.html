@@ -49,6 +49,10 @@
                                             id="exampleRepeatPassword" placeholder="Repeat Password">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <input type="text" name="phone" th:value="${member.phone}" th:field="*{phone}" class="form-control form-control-user" id="exampleFirstName"
+                                           placeholder="Phone Number">
+                                </div>
                                 <input type="submit" value="Update Account" class="btn btn-primary btn-user btn-block">
                                 <hr>
                                 <a href="../main/index.html" class="btn btn-google btn-user btn-block">

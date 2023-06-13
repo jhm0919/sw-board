@@ -2,6 +2,7 @@ package idusw.springboot.controller;
 
 import idusw.springboot.domain.Memo;
 import idusw.springboot.service.MemoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,14 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/memos")
 public class MemoController {
     // 생성자 주입 (Constructor DI)
-    MemoService memoService;
-    public MemoController(MemoService memoService) {
-        this.memoService = memoService;
-    }
+    private final MemoService memoService;
+//    public MemoController(MemoService memoService) {
+//        this.memoService = memoService;
+//    }
 
     @GetMapping("/init")
     public String initialize(Model model) {

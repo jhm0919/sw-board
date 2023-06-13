@@ -14,20 +14,7 @@
     </head>
     <body>
         <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#!">Start Bootstrap</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">Blog</a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        <div th:replace="~{/main/main-fragment :: board-topbar}"></div>
         <!-- Page content-->
         <div class="container mt-5">
             <div class="row">
@@ -39,10 +26,15 @@
                             <!-- Post title-->
                             <h1 class="fw-bolder mb-1">[[${board.title}]]</h1>
                             <!-- Post meta content-->
-                            <div class="text-muted fst-italic mb-2">Posted on January 1, 2023 by Start Bootstrap</div>
+                            <div class="text-muted fst-italic mb-2">Posted on [[${board.regDate}]] by [[${board.writerEmail}]]</div>
                             <!-- Post categories-->
-                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
-                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+<!--                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>-->
+                            <div th:if="${session.mb != null and board != null and session.mb.seq == board.writerSeq}">
+                                <a class="btn btn-primary" th:href="@{'/boards/' + ${board.bno} + '/up-form'}">수정</a>
+                                <a class="btn btn-danger" th:href="@{'/boards/' + ${board.bno} + '/del-form'}">삭제</a>
+                            </div>
+<!--                            <div th:text="${session.mb.seq}"></div>-->
+<!--                            <div th:text="${board.writerSeq}"></div>-->
                         </header>
                         <!-- Preview image figure-->
                         <figure class="mb-4"><img class="img-fluid rounded" src="https://dummyimage.com/900x400/ced4da/6c757d.jpg" alt="..." /></figure>
@@ -54,11 +46,14 @@
                     </article>
                     <!-- Comments section-->
                     <section class="mb-5">
+<!--                        <button type="button" class="badge bg-secondary Like">-->
+<!--                            좋아요 <span class="badge badge-light"></span>-->
+<!--                        </button>-->
                         <button type="button" class="badge bg-secondary btn-warning reply-count">
-                            Reply Count <span class="badge badge-light">[[${board.replyCount}]]</span>
+                            댓글 수 <span class="badge badge-light">[[${board.replyCount}]]</span>
                         </button>
                         <button type="button" class="badge bg-secondary addReply">
-                            Reply Register
+                            댓글 작성
                         </button>
                         <div class="list-group reply-list">
 
@@ -122,13 +117,12 @@
                                             $.getJSON('/replies/boards/' + bno, function (arr) {
                                                 console.log(arr);
                                                 var str = "";
-                                                $('.reply-count').html(" Reply Count  " + arr.length);
+                                                $('.reply-count').html(" 댓글 수 :  " + arr.length);
                                                 $.each(arr, function (idx, reply) {
                                                     console.log(reply);
-                                                    str += '    <div class="card-body" data-rno="' + reply.rno + '"><b>' + reply.rno + '</b>';
+                                                    str += '    <div class="card-body" data-rno="' + reply.rno + '"><b>' + /*reply.rno +*/ '</b>';
                                                     str += '    <h5 class="card-title">' + reply.text + '</h5>';
-                                                    str += '    <h6 class="card-subtitle mb-2 text-muted">' + reply.replier + '</h6>';
-                                                    str += '    <p class="card-text">' + formatTime(reply.regDate) + '</p>';
+                                                    str += '    <h6 class="card-subtitle mb-2 text-muted">' + 'Post on ' + formatTime(reply.regDate) + ' by ' + reply.replier + '</h6>';
                                                     str += '    </div><hr>';
                                                 })
                                                 listGroup.html(str);

@@ -7,20 +7,20 @@ import idusw.springboot.entity.MemberEntity;
 import idusw.springboot.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
     // Constructor DI(Dependency Injection)
-    MemberService memberService;
-    public MemberController(MemberService memberService) { // Spring Framework이 주입(하도록 요청함)
-        this.memberService = memberService;
-    }
+    private final MemberService memberService;
+//    public MemberController(MemberService memberService) { // Spring Framework이 주입(하도록 요청함)
+//        this.memberService = memberService;
+//    }
     HttpSession session = null;
 
     /*
@@ -70,29 +70,16 @@ public class MemberController {
         session.invalidate();
         return "redirect:/";
     }
-/*
-    @GetMapping(value = {"", "/"})
-    public String listMember(Model model) {
-        List<Member> result = null;
-        if((result = memberService.readList()) != null) {
-            model.addAttribute("list", result);
-            return "/members/list";
-        }
-        else
-            return "/errors/404";
-    }
-
- */
 
     @GetMapping("/reg-form")
     public String getRegisterForm(Model model) { // form 요청 -> view (template engine)
         model.addAttribute("member", Member.builder().build());
-        return "/members/register";
+        return "/members/reg-form";
     }
     @PostMapping("/")
     public String createMember(@ModelAttribute("member") Member member, Model model) { // 등록 처리 -> service -> repository -> service -> controller
         if(memberService.create(member) > 0 ) // 정상적으로 레코드의 변화가 발생하는 경우 영향받는 레코드 수를 반환
-            return "redirect:/";
+            return "redirect:/members/login-form";
         else
             return "/errors/404";
     }
@@ -133,5 +120,14 @@ public class MemberController {
     @PostMapping("/forgot") // create vs  update -> @PutMapping, delete -> @DeleteMapping
     public String forgotMemberPassword() { // 비밀번호(갱신) -> service -> repository -> service -> controller
         return "redirect:/"; // 루트로 이동
+    }
+
+    @PostMapping("/check-email")
+    @ResponseBody
+    public int checkEmail(@RequestParam("email") String email) {
+        Member member = Member.builder().email(email).build();
+        int cnt = memberService.checkEmail(member);
+        System.out.println("check-email" + email + " : " + cnt);
+        return cnt; // 1: 중복, 0: 사용 가능
     }
 }

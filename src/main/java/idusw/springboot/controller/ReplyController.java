@@ -23,7 +23,7 @@ public class ReplyController {
         return new ResponseEntity<>(replyService.register(reply), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/boards/{bno}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = {"/boards/{bno}"}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Reply>> getListByBno(@PathVariable("bno") Long bno) {
         return new ResponseEntity<>(replyService.getList(bno), HttpStatus.OK);
     }

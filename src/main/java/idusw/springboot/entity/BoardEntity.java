@@ -26,6 +26,14 @@ public class BoardEntity extends BaseEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name = "seq")
+    //@JoinColumn(name = "WRITER_SEQ")
     private MemberEntity writer; // BoardEntity : MemberEntity = N : 1,
+
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
 }

@@ -24,13 +24,29 @@ public class BoardControllerTests {
     @Test
     void registerBoard() {
         Board board = Board.builder()
-                .bno(2L)
-                .title("egyou")
+                .bno(1L)
+                .title("제목")
                 .content("board register")
                 .writerSeq(1L)
-                .writerEmail("egyou@induk.ac.kr")
-                .writerName("e")
+                .writerEmail("u1@induk.ac.kr")
+                .writerName("u1")
                 .build();
+        if(boardService.registerBoard(board) > 0 ) // 정상적으로 레코드의 변화가 발생하는 경우 영향받는 레코드 수를 반환
+            System.out.println("등록 성공");
+        else
+            System.out.println("등록 실패");
+    }
+
+    @Test
+    void updateBoard() {
+        Board board = Board.builder()
+            .bno(35L)
+            .title("제목")
+            .content("board register")
+            .writerSeq(597L)
+//            .writerEmail("u1@induk.ac.kr")
+//            .writerName("u1")
+            .build();
         if(boardService.registerBoard(board) > 0 ) // 정상적으로 레코드의 변화가 발생하는 경우 영향받는 레코드 수를 반환
             System.out.println("등록 성공");
         else

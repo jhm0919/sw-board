@@ -15,11 +15,11 @@ import lombok.*;
 public class MemberEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "a201809065_member_seq_gen")
-    @SequenceGenerator(sequenceName = "a201809065_member_seq", name = "a201809065_member_seq_gen", initialValue = 222, allocationSize = 1)
+    @SequenceGenerator(sequenceName = "a201809065_member_seq", name = "a201809065_member_seq_gen", initialValue = 1, allocationSize = 1)
     // Oracle : GenerationType.SEQUENCE, Mysql/MariaDB : GenerationType.IDENTITY, auto_increment
     private Long seq;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 30, nullable = false)
     private String email;
 
     @Column(length = 30, nullable = false)
@@ -28,5 +28,10 @@ public class MemberEntity extends BaseEntity {
     @Column(length = 20, nullable = false)
     private String pw;
 
+    @Column(length = 11, nullable = false)
+    private String phone;
+
+    @Column(nullable = true)
+    private Boolean abandon;
 }
 

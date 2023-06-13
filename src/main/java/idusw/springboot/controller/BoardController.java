@@ -4,23 +4,27 @@ import idusw.springboot.domain.Board;
 import idusw.springboot.domain.Member;
 import idusw.springboot.domain.PageRequestDTO;
 import idusw.springboot.domain.PageResultDTO;
+import idusw.springboot.entity.BoardEntity;
+import idusw.springboot.entity.MemberEntity;
 import idusw.springboot.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/boards")
 public class BoardController {
     HttpSession session = null;
 
     private final BoardService boardService; // BoardController에서 사용할 BoardService 객체를 참조하는 변수
-    public BoardController(BoardService boardService) {
-        // Spring Framework 가 BoardService 객체를 주입, boardService(주입될 객체의 참조변수)
-        this.boardService = boardService;
-    }
+//    public BoardController(BoardService boardService) {
+//        // Spring Framework 가 BoardService 객체를 주입, boardService(주입될 객체의 참조변수)
+//        this.boardService = boardService;
+//    }
 
     @GetMapping("/reg-form")
     public String getRegForm(Model model, HttpServletRequest request) {
@@ -50,8 +54,45 @@ public class BoardController {
             return "redirect:/members/login-form"; // 로그인이 안된 상태인 경우
     }
 
-    @GetMapping("")
-    public String getBoards(@ModelAttribute("pageRequestDTO") PageRequestDTO pageRequestDTO, Model model) { // 중간 본 수정
+//    @GetMapping(value ={"", "/"} ) // ?page=&perPage=
+//    public String listBoardPagination(@RequestParam(value="page", required = false, defaultValue = "1") int page,
+//                                       @RequestParam(value="per-page", required = false, defaultValue = "8") int perPage,
+//                                       @RequestParam(value="per-pagination", required = false, defaultValue ="5") int perPagination,
+//                                       @RequestParam(value="type", required = false, defaultValue ="e") String type,
+//                                       @RequestParam(value="keyword", required = false, defaultValue ="@") String keyword,
+//                                       Model model) {
+//        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+//                .page(page)
+//                .perPage(perPage)
+//                .perPagination(perPagination)
+//                .type(type)
+//                .keyword(keyword)
+//                .build();
+//        PageResultDTO<Board, Object[]> resultDTO = boardService.findBoardAll(pageRequestDTO);
+//        if(resultDTO != null) {
+//            System.out.println(resultDTO.getDtoList().size());
+//            model.addAttribute("list", resultDTO); //page number list, map은 attribute name(Key - unique), attribute value 으로 구성
+//            return "/boards/list"; // view : template engine - thymeleaf .html
+//        }
+//        else
+//            return "/errors/404";
+//    }
+
+    @GetMapping(value ={"", "/"} ) // ?page=&perPage=
+    public String getBoards(@ModelAttribute("pageRequestDTO") PageRequestDTO pageRequestDTO,
+                            @RequestParam(value="page", required = false, defaultValue = "1") int page,
+                            @RequestParam(value="per-page", required = false, defaultValue = "8") int perPage,
+                            @RequestParam(value="per-pagination", required = false, defaultValue ="5") int perPagination,
+                            @RequestParam(value="type", required = false, defaultValue ="e") String type,
+                            @RequestParam(value="keyword", required = false, defaultValue ="@") String keyword,
+                            Model model) {
+             pageRequestDTO = PageRequestDTO.builder()
+            .page(page)
+            .perPage(perPage)
+            .perPagination(perPagination)
+            .type(type)
+            .keyword(keyword)
+            .build();
         PageResultDTO<Board, Object[]> pageResultDTO = boardService.findBoardAll(pageRequestDTO);
         //System.out.println(pageResultDTO.getDtoList().size());
         model.addAttribute("list", pageResultDTO);
@@ -62,7 +103,6 @@ public class BoardController {
     public String getBoardByBno(@PathVariable("bno") Long bno, Model model) {
         // Long bno 값을 사용하는 방식을 Board 객체에 bno를 설정하여 사용하는 방식으로 변경
         Board board = boardService.findBoardById(Board.builder().bno(bno).build());
-        boardService.updateBoard(board);
         model.addAttribute("board", board);
         return "/boards/detail";
     }
@@ -76,6 +116,7 @@ public class BoardController {
 
     @PutMapping("/{bno}")
     public String putBoard(@ModelAttribute("board") Board board, Model model) {
+        System.out.println("writerSeq: " + board.getWriterSeq()); // writerSeq 값 로그 출력
         boardService.updateBoard(board);
         model.addAttribute(boardService.findBoardById(board));
         return "redirect:/boards/" + board.getBno();

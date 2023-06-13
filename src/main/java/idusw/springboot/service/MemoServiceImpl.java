@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 @Service// @Service : stereo type, Spring Framework에게 컴포넌트임을 알려줌
 public class MemoServiceImpl implements MemoService {
-    private final   MemoRepository memoRepository;
+    private final MemoRepository memoRepository;
     public MemoServiceImpl(MemoRepository memoRepository) { // 생성자 주입
         // Spring Framework가 MemoRepository 인터페이스를 구현한 인스턴스를 배정함
         this.memoRepository = memoRepository;

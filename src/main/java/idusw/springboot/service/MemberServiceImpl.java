@@ -26,7 +26,7 @@ import java.util.function.Function;
 public class MemberServiceImpl implements MemberService {
     // DI - IoC (Inversion of Control : 제어의 역전) 방법 중 하나, DI, DL ...
     //
-    MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public MemberServiceImpl(MemberRepository memberRepository) { // Spring Framework이 주입(하도록 요청함)
         this.memberRepository = memberRepository;
@@ -39,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
                 .email(m.getEmail())
                 .name(m.getName())
                 .pw(m.getPw())
+                .phone(m.getPhone())
                 .build();
         if(memberRepository.save(entity) != null) // 저장 성공
             return 1;
@@ -54,6 +55,7 @@ public class MemberServiceImpl implements MemberService {
         result.setSeq(e.getSeq());
         result.setEmail(e.getEmail());
         result.setName(e.getName());
+        result.setPhone(e.getPhone());
         return result;
     }
 
@@ -69,6 +71,7 @@ public class MemberServiceImpl implements MemberService {
                         .email(e.getEmail())
                         .name(e.getName())
                         .pw(e.getPw())
+                        .phone(e.getPhone())
                         .regDate(e.getRegDate())
                         .modDate(e.getModDate())
                         .build();
@@ -85,6 +88,7 @@ public class MemberServiceImpl implements MemberService {
                 .email(m.getEmail())
                 .name(m.getName())
                 .pw(m.getPw())
+                .phone(m.getPhone())
                 .build();
         if(memberRepository.save(entity) != null) // 저장 성공
             return 1;
@@ -116,6 +120,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    public int checkEmail(Member m) {
+        List<MemberEntity> memberEntityList = memberRepository.getMemberEntitiesByEmail(m.getEmail());
+        if(memberEntityList.size() > 0)
+            return 1; // email 중복
+        else
+            return 0; // 0 : 사용 가능
+    }
+
+    @Override
     public PageResultDTO<Member, MemberEntity> getList(PageRequestDTO requestDTO) {
         //Sort sort = Sort.by("seq").descending();
         Sort sort = Sort.by("seq").ascending();
@@ -134,9 +147,7 @@ public class MemberServiceImpl implements MemberService {
 
         Function<MemberEntity, Member> fn = (entity -> entityToDto(entity));
 
-        PageResultDTO pageResultDTO = new PageResultDTO<>(result, fn, requestDTO.getPerPagination());
-
-        return pageResultDTO;
+        return new PageResultDTO<>(result, fn, requestDTO.getPerPagination());
     }
 
     private BooleanBuilder findByCondition(PageRequestDTO pageRequestDTO) {
@@ -157,28 +168,28 @@ public class MemberServiceImpl implements MemberService {
         String keyword = pageRequestDTO.getKeyword();
 
         BooleanBuilder conditionBuilder = new BooleanBuilder();
-        // select * from member where
-        // seq > 0
-        // email=keyword or name=keyword
-        // seq > 0 and email=keyword or name=keyword
-        // select * from member where seq > 0 and email=keyword or name=keyword
+//         select * from member where
+//         seq > 0
+//         email=keyword or name=keyword
+//         seq > 0 and email=keyword or name=keyword
+//         select * from member where seq > 0 and email=keyword or name=keyword
         if(type.contains("e")) { // email로 검색
             conditionBuilder.or(qMemberEntity.email.contains(keyword));
         }
-        if(type.contains("n")) { // email로 검색
+        if(type.contains("n")) { // name로 검색
             conditionBuilder.or(qMemberEntity.name.contains(keyword));
         }
-        /*
         if(type.contains("p")) { // phone로 검색
             conditionBuilder.or(qMemberEntity.phone.contains(keyword));
         }
+        /*
         if(type.contains("a")) { // address로 검색
             conditionBuilder.or(qMemberEntity.address.contains(keyword));
         } // 조건을 전부 줄 수도 있으니 if else문 아님
         if(type.contains("l")) {
             conditionBuilder.or(qMemberEntity.level.contains(keyword));
         }
-         */
+        */
         booleanBuilder.and(conditionBuilder);
         return booleanBuilder;
     }
